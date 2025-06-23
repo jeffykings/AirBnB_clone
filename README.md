@@ -1,96 +1,73 @@
-<p align="center">
-  <img src="https://github.com/jeffykings/AirBnB_clone/blob/main/assets/hbnb_logo.png" alt="HolbertonBnB logo">
-</p>
+---
 
+# AirBnB Clone
 
-<h1 align="center">HolbertonBnB</h1>
-<p align="center">An AirBnB clone.</p>
+This project is a simplified clone of the AirBnB website, built as part of the Holberton School curriculum. The goal is to deploy a basic version of the platform on your own server, complete with a working backend, front-end interface, and a command-line interpreter.
+
+## Project Overview
+
+The AirBnB Clone is designed to help understand and build the full stack of a web application — from command-line data management to dynamic web pages and API interaction.
+
+## Features
+
+* **Command Interpreter**: A custom shell for creating, updating, and managing application data. Ideal for development and debugging.
+* **Website (Front-end)**: A user-friendly interface displaying both static and dynamic content.
+* **Storage**: A system for persisting data — using either a database or file-based storage.
+* **RESTful API**: An interface for communication between the front-end and data layer, supporting CRUD operations (Create, Read, Update, Delete).
 
 ---
 
-## Description :label:
+## Command Interpreter
 
-HolbertonBnB is a complete web application, integrating database storage, a back-end API, and front-end interface in a clone of AirBnB.
+### Description
 
-This team project is part of the (Alx) Holberton School Software Engineering program. </br>
-It represents the first step towards building a full web application.
+The command interpreter is a text-based interface for managing the data model. It supports a range of commands to create, retrieve, update, and delete objects in the system.
 
-This first step consists of:
-- a custom command-line interface for data management,
-- and the base classes for the storage of this data.
+### Starting the Interpreter
 
-## Usage 💻
-
-The console works both in interactive mode and non-interactive mode, much like a Unix shell.
-It prints a prompt **(hbnb)** and waits for the user for input.
-
-Command | Example
-------- | -------
-Run the console | ```./console.py```
-Quit the console | ```(hbnb) quit```
-Display the help for a command | ```(hbnb) help <command>```
-Create an object (prints its id)| ```(hbnb) create <class>```
-Show an object | ```(hbnb) show <class> <id>``` or ```(hbnb) <class>.show(<id>)```
-Destroy an object | ```(hbnb) destroy <class> <id>``` or ```(hbnb) <class>.destroy(<id>)```
-Show all objects, or all instances of a class | ```(hbnb) all``` or ```(hbnb) all <class>```
-Update an attribute of an object | ```(hbnb) update <class> <id> <attribute name> "<attribute value>"``` or ```(hbnb) <class>.update(<id>, <attribute name>, "<attribute value>")```
-
-### Interactive mode (example)
+To launch the console, run:
 
 ```bash
 $ ./console.py
-(hbnb) help
-
-Documented commands (type help <topic>):
-========================================
-EOF  help  quit
-
-(hbnb)
-(hbnb)
-(hbnb) quit
-$
 ```
 
-### Non-interactive mode (example)
+This will start an interactive shell where you can type commands directly.
+
+### Usage
+
+Once in the console, you can use the following syntax:
 
 ```bash
-$ echo "help" | ./console.py
-(hbnb)
-
-Documented commands (type help <topic>):
-========================================
-EOF  help  quit
-(hbnb)
-$
-$ cat test_help
-help
-$
-$ cat test_help | ./console.py
-(hbnb)
-
-Documented commands (type help <topic>):
-========================================
-EOF  help  quit
-(hbnb)
-$
+create <class name>
+show <class name> <id>
+destroy <class name> <id>
+all [<class name>]
+update <class name> <id> <attribute name> "<attribute value>"
 ```
 
-## Testing :straight_ruler:
+### Examples
 
-Unittests for the HolbertonBnB project are defined in the [tests](./tests)
-folder. To run the entire test suite simultaneously, execute the following command:
-
-```
-$ python3 unittest -m discover tests
-```
-
-Alternatively, you can specify a single test file to run at a time:
-
-```
-$ python3 unittest -m tests/test_console.py
+```bash
+(hbnb) create User
+(hbnb) show User 1234-1234-1234
+(hbnb) all
+(hbnb) destroy User 1234-1234-1234
+(hbnb) update User 1234-1234-1234 email "user@example.com"
 ```
 
+---
 
-## Authors :black_nib:
+## Project Structure
 
-* **Emeka Amuh** <[jeffykings](https://github.com/jeffykings)>
+```
+.
+├── console.py         # Command-line interpreter
+├── models/            # Data models (User, Place, State, etc.)
+├── web_static/        # Static HTML, CSS, JS
+├── web_dynamic/       # Dynamic web content using Flask
+├── api/               # RESTful API
+├── tests/             # Unit tests
+└── README.md          # Project documentation
+```
+
+---
