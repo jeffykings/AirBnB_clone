@@ -18,10 +18,7 @@ class TestBase(unittest.TestCase):
         """
         b1 = BaseModel()
         b2_uuid = str(uuid.uuid4())
-        b2 = BaseModel()
-        b2.id = b2_uuid
-        b2.name="The weeknd"
-        b2.album="Trilogy"
+        b2 = BaseModel(id=b2_uuid, name="The weeknd", album="Trilogy")
         self.assertIsInstance(b1.id, str)
         self.assertIsInstance(b2.id, str)
         self.assertEqual(b2_uuid, b2.id)
@@ -36,16 +33,16 @@ class TestBase(unittest.TestCase):
         """Test method for dict"""
         b1 = BaseModel()
         b2_uuid = str(uuid.uuid4())
-        b2 = BaseModel()
-        b2.id = b2_uuid
-        b2.name="The weeknd"
-        b2.album="Trilogy"
+        b2 = BaseModel(id=b2_uuid, name="The weeknd", album="Trilogy")
         b1_dict = b1.to_dict()
         self.assertIsInstance(b1_dict, dict)
         self.assertIn('id', b1_dict.keys())
         self.assertIn('created_at', b1_dict.keys())
         self.assertIn('updated_at', b1_dict.keys())
         self.assertEqual(b1_dict['__class__'], type(b1).__name__)
+        b2_dict = b2.to_dict()
+        self.assertEqual(b2_dict["name"], "The weeknd")
+        self.assertEqual(b2_dict["album"], "Trilogy")
 
     def test_save(self):
         """Test method for save"""
