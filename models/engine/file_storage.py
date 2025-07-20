@@ -46,12 +46,19 @@ class FileStorage():
         doesn’t exist, no
         exception should be raised)
         """
+        classes = {
+                "BaseModel": BaseModel,
+                }
+
         try:
             with open(type(self).__file_path, mode="r",
                       encoding="utf-8") as read_file:
                 obj_dict = json.load(read_file)
                 for key, value in obj_dict.items():
-                    type(self).__objects[key] = BaseModel(**value)
+                    class_name = value.get("__class__")
+                    if class_name in classes:
+                        type(self).__objects[key] = classes[class_name](
+                                **value)
 
         except FileNotFoundError:
             pass
