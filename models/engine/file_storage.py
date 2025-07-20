@@ -1,7 +1,8 @@
 #!/usr/bin/python3
+"""
+Module: file_storage.py
 
-""" contains a class FileStorage that serializes instances to a
-JSON file and deserializes JSON file to instances
+Defines a `FileStorage` class.
 """
 import os
 import json
@@ -9,9 +10,11 @@ from models.base_model import BaseModel
 
 
 class FileStorage():
-    """a  class FileStorage that serializes instances to a JSON file
-    and deserializes JSON file to instances:
     """
+    serializes instances to a JSON file and
+    deserializes JSON file to instances
+    """
+
     __file_path = "file.json"
     __objects = {}
 
@@ -19,55 +22,45 @@ class FileStorage():
         """
         returns the dictionary __objects
         """
-        return type(self).__objects
+        return FileStorage.__objects
 
     def new(self, obj):
-        """ sets in __objects the obj with key <obj class name>.id
         """
-        key = f"{obj.__class__.__name__}.{obj.id}"
-
-        type(self).__objects[key] = obj
+        sets in __objects the obj with key <obj class name>.id
+        """
+        key = "{}.{}".format(type(obj).__name__, obj.id)
+        FileStorage.__objects[key] = obj
 
     def save(self):
         """
         serializes __objects to the JSON file (path: __file_path)
         """
-        temp_obj = {}
-        for key, value in type(self).__objects.items():
-            temp_obj[key] = value.to_dict()
-
-        with open(type(self).__file_path, mode="w",
-                  encoding="utf-8") as write_file:
-            json.dump(temp_obj, write_file)
+        with open(FileStorage.__file_path, 'w') as f:
+            json.dump(
+                {k: v.to_dict() for k, v in FileStorage.__objects.items()}, f)
 
     def reload(self):
         """
-        deserializes the JSON file to __objects (only if the JSON file
-        (__file_path) exists ; otherwise, do nothing. If the file
-        doesn’t exist, no
-        exception should be raised)
+        deserializes the JSON file to __objects only if the JSON
+        file exists; otherwise, does nothing
         """
-        classes = {
-                "BaseModel": BaseModel,
-                }
+        current_classes = {'BaseModel': BaseModel,
+                           }
 
-        file_path = type(self).__file_path
-
-        if not os.path.exists(file_path):
+        if not os.path.exists(FileStorage.__file_path):
             return
 
-        try:
-            with open(file_path, mode="r",
-                      encoding="utf-8") as read_file:
-                obj_dict = json.load(read_file)
+        with open(FileStorage.__file_path, 'r') as f:
+            deserialized = None
 
-        except json.JSONDecodeError:
-            return
+            try:
+                deserialized = json.load(f)
+            except json.JSONDecodeError:
+                pass
 
-        if not isinstance(obj_dict, dict):
-            return
+            if deserialized is None:
+                return
 
-        for key, value in obj_dict.items():
-            class_name = value.get("__class__") or key.split('.')[0]
-            if class_name in classes:
-                type(self).__objects[key] = classes[class_name](**value)
+            FileStorage.__objects = {
+                k: current_classes[k.split('.')[0]](**v)
+                for k, v in deserialized.items()}
