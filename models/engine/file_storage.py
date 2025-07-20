@@ -62,12 +62,12 @@ class FileStorage():
                 obj_dict = json.load(read_file)
 
         except json.JSONDecodeError:
-            pass
+            return
 
         if not isinstance(obj_dict, dict):
             return
 
         for key, value in obj_dict.items():
-            class_name = value.get("__class__")
+            class_name = value.get("__class__") or key.split('.')[0]
             if class_name in classes:
                 type(self).__objects[key] = classes[class_name](**value)
