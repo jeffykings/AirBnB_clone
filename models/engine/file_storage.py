@@ -3,6 +3,7 @@
 """ contains a class FileStorage that serializes instances to a
 JSON file and deserializes JSON file to instances
 """
+import os
 import json
 from models.base_model import BaseModel
 
@@ -31,13 +32,13 @@ class FileStorage():
         """
         serializes __objects to the JSON file (path: __file_path)
         """
-        temp_dict = {}
+        temp_obj = {}
         for key, value in type(self).__objects.items():
-            temp_dict[key] = value.to_dict()
+            temp_obj[key] = value.to_dict()
 
         with open(type(self).__file_path, mode="w",
                   encoding="utf-8") as write_file:
-            json.dump(temp_dict, write_file)
+            json.dump(temp_obj, write_file)
 
     def reload(self):
         """
@@ -50,15 +51,23 @@ class FileStorage():
                 "BaseModel": BaseModel,
                 }
 
+        file_path = type(self).__file_path
+
+        if not os.path.exists(file_path):
+            return
+
         try:
-            with open(type(self).__file_path, mode="r",
+            with open(file_path, mode="r",
                       encoding="utf-8") as read_file:
                 obj_dict = json.load(read_file)
-                for key, value in obj_dict.items():
-                    class_name = value.get("__class__")
-                    if class_name in classes:
-                        type(self).__objects[key] = classes[class_name](
-                                **value)
 
-        except FileNotFoundError:
+        except json.JSONDecodeError:
             pass
+
+        if not isinstance(obj_dict, dict):
+            return
+
+        for key, value in obj_dict.items():
+            class_name = value.get("__class__")
+            if class_name in classes:
+                type(self).__objects[key] = classes[class_name](**value)
