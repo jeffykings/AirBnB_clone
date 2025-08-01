@@ -19,13 +19,13 @@ class HBNBCommand(cmd.Cmd):
 and prints the id.
 
         """
-        
-        line_token = line.split()
 
-        if not class_checker(l, False):
+        l = line.split()
+
+        if not HBNBCommand.class_checker(l, False):
             return
 
-        new_model = type(self).classes[line_token[1]]()
+        new_model = type(self).classes[l[0]]()
         new_model.save()
         print(f"{new_model.id}")
 
@@ -38,13 +38,13 @@ and prints the id.
 
         l = line.split()
 
-        checker = class_checker(l, True)
+        checker = HBNBCommand.class_checker(l, True)
         if checker is False:
             return
 
-        key = ".".join(l)
+        key = f"{l[0]}.{l[1]}"
 
-        if instance_checker(key) is False:
+        if HBNBCommand.instance_checker(key) is False:
             return
 
         print(f"{stored_obj[key]}")
@@ -59,13 +59,13 @@ and prints the id.
 
         l = line.split()
 
-        checker = class_checker(l, True)
+        checker = HBNBCommand.class_checker(l, True)
         if checker is False:
             return
 
-        key = ".".join(l)
+        key = f"{l[0]}.{l[1]}"
 
-        if instance_checker(key) is False:
+        if HBNBCommand.instance_checker(key) is False:
             return
 
         del stored_obj[key]
@@ -79,14 +79,14 @@ and prints the id.
         """
         from models import storage
         stored_obj = storage.all()
-        
+
         l = line.split()
 
-        if len(l) == 1:
+        if not l:
             for value in stored_obj.values():
                 print(value)
         else:
-            checker = class_checker(l, False)
+            checker = HBNBCommand.class_checker(l, False)
             if checker is False:
                 return
             for key, value in stored_obj.items():
@@ -96,9 +96,9 @@ and prints the id.
     def  do_update(self, line):
         """ Updates an instance based on the class name and id by adding
         or updating attribute (save the change into the JSON file).
-        
+
         Usage:
-             update <class name> <id> <attribute name> "<attribute value>
+            update <class name> <id> <attribute name> "<attribute value>"
         """
 
         from models import storage
@@ -106,21 +106,22 @@ and prints the id.
 
         l = line.split()
 
-        checker = class_checker(l, False)
+        checker = HBNBCommand.class_checker(l, False)
         if checker is False:
             return
 
         key = f"{l[0]}.{l[1]}"
 
-        if instance_checker(key) is False:
+        if HBNBCommand.instance_checker(key) is False:
             return
 
-        if not attribute_checker(l):
+        if not HBNBCommand.attribute_checker(l):
             return
 
-        setattr(l[0], l[2], l[3])
+        obj = stored_obj[key]
+        setattr(obj, l[2], l[3])
         storage.save()
-    
+
     def emptyline(self):
         pass
 
@@ -146,11 +147,11 @@ and prints the id.
             print("** class name missing **")
             return False
 
-        elif l[0] not in type(self).classes:
+        elif l[0] not in  HBNBCommand.classes:
             print("** class doesn't exist **")
             return False
 
-        elif len(l) > 1 and check is not False:
+        elif check and len(l) < 2:
             print("** instance id missing **")
             return False
         else:
@@ -178,9 +179,11 @@ and prints the id.
             print("** attribute name missing ** ")
             return False
 
-        if len(line) < 4:
+        elif len(line) < 4:
             print("** value missing **")
             return False
+
+        return True
 
 
 
