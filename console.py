@@ -86,7 +86,7 @@ and prints the id.
         if not arg:
             print([str(value) for value in stored_obj.values()])
         else:
-            checker = HBNBCommand.class_checker(l, False)
+            checker = HBNBCommand.class_checker(arg, False)
             if checker is False:
                 return
             print([str(value) for key, value in stored_obj.items()
