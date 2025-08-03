@@ -9,10 +9,9 @@ from models.base_model import BaseModel
 class HBNBCommand(cmd.Cmd):
     """entry point of the command interpreter"""
 
-    classes = {"BaseModel" : BaseModel,
-            }
+    classes = {"BaseModel": BaseModel,
+               }
     prompt = "(hbnb) "
-
 
     def do_create(self, line):
         """Creates a new instance of BaseModel, saves it (to the JSON file)
@@ -20,12 +19,12 @@ and prints the id.
 
         """
 
-        l = line.split()
+        arg = line.split()
 
-        if not HBNBCommand.class_checker(l, False):
+        if not HBNBCommand.class_checker(arg, False):
             return
 
-        new_model = type(self).classes[l[0]]()
+        new_model = type(self).classes[arg[0]]()
         new_model.save()
         print(f"{new_model.id}")
 
@@ -36,13 +35,13 @@ and prints the id.
         from models import storage
         stored_obj = storage.all()
 
-        l = line.split()
+        arg = line.split()
 
-        checker = HBNBCommand.class_checker(l, True)
+        checker = HBNBCommand.class_checker(arg, True)
         if checker is False:
             return
 
-        key = f"{l[0]}.{l[1]}"
+        key = f"{arg[0]}.{arg[1]}"
 
         if HBNBCommand.instance_checker(key) is False:
             return
@@ -57,13 +56,13 @@ and prints the id.
         from models import storage
         stored_obj = storage.all()
 
-        l = line.split()
+        arg = line.split()
 
-        checker = HBNBCommand.class_checker(l, True)
+        checker = HBNBCommand.class_checker(arg, True)
         if checker is False:
             return
 
-        key = f"{l[0]}.{l[1]}"
+        key = f"{arg[0]}.{arg[1]}"
 
         if HBNBCommand.instance_checker(key) is False:
             return
@@ -77,49 +76,50 @@ and prints the id.
 
         usage:  $ all BaseModel or $ all
         """
+
+        temp_array = []
         from models import storage
         stored_obj = storage.all()
 
-        l = line.split()
+        arg = line.split()
 
-        if not l:
-            for value in stored_obj.values():
-                print(value)
+        if not arg:
+            print([str(value) for value in stored_obj.values()])
         else:
             checker = HBNBCommand.class_checker(l, False)
             if checker is False:
                 return
-            for key, value in stored_obj.items():
-                if key.startswith(f"{l[0]}."):
-                    print(value)
+            print([str(value) for key, value in stored_obj.items()
+                   if key.startswith(f"{arg[0]}.")])
 
-    def  do_update(self, line):
+    def do_update(self, line):
         """ Updates an instance based on the class name and id by adding
-        or updating attribute (save the change into the JSON file).
+            or updating attribute (save the change into the JSON file).
 
-        Usage:
-            update <class name> <id> <attribute name> "<attribute value>"
+            Usage:
+                update <class name> <id> <attribute name> "<attribute value>"
         """
 
+        import shlex
         from models import storage
         stored_obj = storage.all()
 
-        l = line.split()
+        arg = shlex.split(line)
 
-        checker = HBNBCommand.class_checker(l, False)
+        checker = HBNBCommand.class_checker(arg, False)
         if checker is False:
             return
 
-        key = f"{l[0]}.{l[1]}"
+        key = f"{arg[0]}.{arg[1]}"
 
         if HBNBCommand.instance_checker(key) is False:
             return
 
-        if not HBNBCommand.attribute_checker(l):
+        if not HBNBCommand.attribute_checker(arg):
             return
 
         obj = stored_obj[key]
-        setattr(obj, l[2], l[3])
+        setattr(obj, arg[2], arg[3])
         storage.save()
 
     def emptyline(self):
@@ -140,18 +140,18 @@ and prints the id.
         return True
 
     @staticmethod
-    def class_checker(l, check):
+    def class_checker(arg, check):
         """class and id checker to know if they exist"""
 
-        if not l:
+        if not arg:
             print("** class name missing **")
             return False
 
-        elif l[0] not in  HBNBCommand.classes:
+        elif arg[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return False
 
-        elif check and len(l) < 2:
+        elif check and len(arg) < 2:
             print("** instance id missing **")
             return False
         else:
@@ -184,7 +184,6 @@ and prints the id.
             return False
 
         return True
-
 
 
 if __name__ == '__main__':
