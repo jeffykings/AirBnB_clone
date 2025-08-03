@@ -106,8 +106,7 @@ and prints the id.
 
         arg = shlex.split(line)
 
-        checker = HBNBCommand.class_checker(arg, False)
-        if checker is False:
+        if not HBNBCommand.class_checker(arg, True):
             return
 
         key = f"{arg[0]}.{arg[1]}"
