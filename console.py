@@ -175,7 +175,7 @@ and prints the id.
         """checks if attribute and value exists"""
 
         if len(line) < 3:
-            print("** attribute name missing ** ")
+            print("** attribute name missing **")
             return False
 
         elif len(line) < 4:
