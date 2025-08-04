@@ -143,6 +143,24 @@ and prints the id.
         setattr(obj, arg[2], arg[3])
         storage.save()
 
+    def do_count(self, line):
+        """retrieve the number of instances of a class
+        usage:
+            <class name>.count().
+        """
+
+        from models import storage
+        stored_obj = storage.all()
+
+        arg = line.split()
+        checker = HBNBCommand.class_checker(arg, False)
+        if checker is False:
+            return
+        temp_list = [str(value) for key, value in stored_obj.items()
+                     if key.startswith(f"{arg[0]}.")]
+
+        print(len(temp_list))
+
     def emptyline(self):
         pass
 
