@@ -25,6 +25,16 @@ class HBNBCommand(cmd.Cmd):
                }
     prompt = "(hbnb) "
 
+    def precmd(self, line):
+        if "." in line and line.endswith("()"):
+            try:
+                class_name, func_call = line.split(".")
+                command = func_call.replace("()", "")
+                return f"{command} {class_name}"
+            except Exception:
+                pass
+        return line
+
     def do_create(self, line):
         """Creates a new instance of BaseModel, saves it (to the JSON file)
 and prints the id.
