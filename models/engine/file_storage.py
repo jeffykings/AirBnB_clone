@@ -6,7 +6,7 @@ JSON file and deserializes JSON file to instances
 import os
 import json
 from models.base_model import BaseModel
-
+from models.user import User
 
 class FileStorage():
     """a  class FileStorage that serializes instances to a JSON file
@@ -49,6 +49,7 @@ class FileStorage():
         """
         classes = {
                 "BaseModel": BaseModel,
+                "User": User
                 }
 
         file_path = type(self).__file_path

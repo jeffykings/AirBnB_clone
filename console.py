@@ -4,12 +4,14 @@
 
 import cmd
 from models.base_model import BaseModel
+from models.user import User
 
 
 class HBNBCommand(cmd.Cmd):
     """entry point of the command interpreter"""
 
     classes = {"BaseModel": BaseModel,
+               "User": User
                }
     prompt = "(hbnb) "
 
