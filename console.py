@@ -3,6 +3,7 @@
 """contains the entry point of the command interpreter"""
 
 import cmd
+import re
 from models.base_model import BaseModel
 from models.user import User
 from models.place import Place
@@ -26,13 +27,20 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
 
     def precmd(self, line):
-        if "." in line and line.endswith("()"):
-            try:
-                class_name, func_call = line.split(".")
-                command = func_call.replace("()", "")
-                return f"{command} {class_name}"
-            except Exception:
-                pass
+        if "." in line:
+            pattern = r'^(\w+)\.(\w+)\((.*?)\)$'
+            match = re.match(pattern, line)
+
+            if match:
+                class_name = match.group(1)
+                command = match.group(2)
+                args = match.group(3)
+
+                if args:
+                    args = args.strip().strip('"').strip("'")
+                    return f"{command} {class_name} {args}"
+                else:
+                    return f"{command} {class_name}"
         return line
 
     def do_create(self, line):
