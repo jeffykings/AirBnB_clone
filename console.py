@@ -36,8 +36,35 @@ class HBNBCommand(cmd.Cmd):
                 command = match.group(2)
                 args = match.group(3)
 
+                # Handle update with arguments
+                if command == "update":
+                    import shlex
+
+                    compa = r'^\s*("[^"]+"|\'[^\']+\')\s*,\s*(\{.*\})\s*$'
+                    dict_match = re.match(compa, args, re.DOTALL)
+
+                    if dict_match:
+                        obj_id_raw, dict_raw = dict_match.groups()
+                        obj_id = shlex.split(obj_id_raw)[0]
+
+                        # Pass the dict as-is; let do_update handle it
+                        return f'update {class_name} {obj_id} {dict_raw}'
+
+                    tokens = [t.rstrip(',') for t in shlex.split(args)]
+                    if len(tokens) >= 3:
+                        obj_id = tokens[0]
+                        attr_name = tokens[1]
+                        attr_value = ' '.join(tokens[2:])
+
+                        if re.search(r'\s|["\']', attr_value):
+                            attr_value = '"' + attr_value.replace('"', r'\"') + '"'
+                        return f"update {class_name} {obj_id} {attr_name} {attr_value}"
+                    else:
+                        return f"update {class_name} {args}"
+
+                # Normal handling for other commands
                 if args:
-                    args = args.strip().strip('"').strip("'")
+                    args = args.strip()
                     return f"{command} {class_name} {args}"
                 else:
                     return f"{command} {class_name}"
@@ -62,10 +89,11 @@ and prints the id.
         """Prints the string representation of an instance based on the
         class name and id.
         """
+        import shlex
         from models import storage
         stored_obj = storage.all()
 
-        arg = line.split()
+        arg = shlex.split(line)
 
         checker = HBNBCommand.class_checker(arg, True)
         if checker is False:
@@ -83,10 +111,11 @@ and prints the id.
         (save the change into the JSON file)
         """
 
+        import shlex
         from models import storage
         stored_obj = storage.all()
 
-        arg = line.split()
+        arg = shlex.split(line)
 
         checker = HBNBCommand.class_checker(arg, True)
         if checker is False:
@@ -130,7 +159,7 @@ and prints the id.
                 update <class name> <id> <attribute name> "<attribute value>"
         """
 
-        import shlex
+        import shlex, ast
         from models import storage
         stored_obj = storage.all()
 
@@ -144,11 +173,36 @@ and prints the id.
         if HBNBCommand.instance_checker(key) is False:
             return
 
+        if len(arg) >= 3 and arg[2].startswith("{") and arg[2].endswith("}"):
+            dict_str = ' '.join(arg[2:])
+            try:
+                updates = ast.literal_eval(dict_str)
+            except (ValueError, SyntaxError):
+                print("** invalid dictionary **")
+                return
+
+            if not isinstance(updates, dict):
+                print("** invalid dictionary **")
+                return
+
+            obj = stored_obj[key]   
+            for k, v in updates.items():
+                setattr(obj, k, v)
+            storage.save()
+            return
+
         if not HBNBCommand.attribute_checker(arg):
             return
 
         obj = stored_obj[key]
-        setattr(obj, arg[2], arg[3])
+
+        # Try to cast numbers/bools if value looks like it
+        val = arg[3]
+        try:
+            val = ast.literal_eval(val)
+        except Exception:
+            pass
+        setattr(obj, arg[2], val)
         storage.save()
 
     def do_count(self, line):
